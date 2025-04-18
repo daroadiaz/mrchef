@@ -1,0 +1,31 @@
+#titulo{
+    text-align: center;
+    color: black;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    font-style: italic;
+}
+
+/* Descripcion */
+#descripcion_receta {
+    text-align: justify;
+}
+
+#boton{
+    background-color: black;
+    border: 1px solid black;
+}
+
+/* Estilo para el botón de crear receta */
+.btn-crear-receta {
+    background-color: black;
+    border: 1px solid black;
+    color: white;
+    font-weight: bold;
+    padding: 10px 20px;
+    transition: all 0.3s ease;
+}
+
+.btn-crear-receta:hover {
+    background-color: #333;
+    transform: scale(1.05);
+}
