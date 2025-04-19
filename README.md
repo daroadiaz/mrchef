@@ -2,117 +2,154 @@
 
 ## Overview
 
-MrChef is a web application that consists of two main components:
+MrChef es una aplicación web que consta de dos componentes principales:
+
 - Backend API (Java Spring Boot)
-- Frontend UI (Java Spring Boot with Thymeleaf)
+- Frontend UI (Java Spring Boot con Thymeleaf)
 
-This application allows users to create, view, and manage cooking recipes.
+Esta aplicación permite a los usuarios crear, ver y gestionar recetas de cocina.
 
-## System Requirements
+## Requisitos del Sistema
 
 - Java 17
 - MySQL 8.0
-- Maven (optional if using the provided wrapper or Docker)
+- Maven (opcional si se usa el wrapper proporcionado o Docker)
 
-## Ports
+## Puertos
 
-- **Backend**: 8080
-- **Frontend**: 8081
-- **Database**: 3306 (Local MySQL installation)
+- Backend: 8080
+- Frontend: 8081
+- Base de datos: 3306 (Instalación local de MySQL)
+- SonarQube: 9000 (Para análisis de calidad de código)
 
-## Independent Deployment
+## Despliegue Independiente
 
-The application is designed to be deployable with or without Docker. Here are the instructions for both scenarios:
+La aplicación está diseñada para ser desplegada con o sin Docker. Aquí están las instrucciones para ambos escenarios:
 
-### Standard Deployment (without Docker)
+### Despliegue Estándar (sin Docker)
 
-1. **Database Setup**:
-   - Ensure MySQL is running on port 3306
-   - Create a database named `mrchef`
-   - Use default credentials or update the application.properties files
+#### Configuración de la Base de Datos:
 
-2. **Backend Deployment**:
-   ```bash
-   cd MrChef-Backend
-   ./mvnw clean package
-   java -jar target/mrchefbackend-0.0.1-SNAPSHOT.jar
-   ```
+- Asegúrese de que MySQL está ejecutándose en el puerto 3306
+- Cree una base de datos llamada `mrchef`
+- Use credenciales predeterminadas o actualice los archivos application.properties
 
-3. **Frontend Deployment**:
-   ```bash
-   cd MrChef-FrontEnd
-   ./mvnw clean package
-   java -jar target/mrchef-0.0.1-SNAPSHOT.jar
-   ```
-
-4. **Access the Application**:
-   - Frontend UI: http://localhost:8081
-   - Backend API: http://localhost:8080
-
-## Vulnerability Scanning with Docker
-
-We provide Docker configurations specifically for vulnerability scanning purposes. This allows you to analyze dependencies without affecting your regular deployment.
-
-### Running the Vulnerability Scan
-
-1. **Build and run the containers for scanning**:
-   ```bash
-   docker-compose build
-   docker-compose up -d
-   ```
-
-2. **Extract the vulnerability reports**:
-   ```bash
-   docker cp mrchef-backend:/reports/backend-vulnerability-report.html ./backend-vulnerabilities.html
-   docker cp mrchef-frontend:/reports/frontend-vulnerability-report.html ./frontend-vulnerabilities.html
-   ```
-
-3. **View the reports**:
-   - Open the HTML files in any web browser
-   - The reports provide detailed information about vulnerabilities in dependencies
-
-4. **Stop the containers after scanning**:
-   ```bash
-   docker-compose down
-   ```
-
-### Configuration Details
-
-The Docker setup utilizes OWASP Dependency-Check to scan for known vulnerabilities in project dependencies. This provides:
-
-- Comprehensive vulnerability assessment
-- CVE identification and severity ratings
-- Recommendations for remediating security issues
-- Detailed reports in HTML and JSON formats
-
-## Important Security Considerations
-
-- The application uses JWT for authentication
-- Always ensure your MySQL installation is properly secured
-- Update dependencies regularly to address security vulnerabilities
-- Review the vulnerability reports and address critical issues
-
-## Architecture
-
-```
-Client → Frontend (8081) → Backend (8080) → Database (3306)
+#### Despliegue del Backend:
+```bash
+cd MrChef-Backend
+./mvnw clean package
+java -jar target/mrchefbackend-0.0.1-SNAPSHOT.jar
 ```
 
-## Development Notes
+#### Despliegue del Frontend:
+```bash
+cd MrChef-FrontEnd
+./mvnw clean package
+java -jar target/mrchef-0.0.1-SNAPSHOT.jar
+```
 
-- Backend uses Spring Security and JWT for authentication
-- Frontend uses Thymeleaf templates and Bootstrap for UI
-- Both components are secured with Spring Security
-- OWASP Dependency-Check is integrated for security vulnerability analysis
+#### Acceso a la Aplicación:
 
-## Troubleshooting
+- Frontend UI: http://localhost:8081
+- Backend API: http://localhost:8080
 
-If you encounter issues with database connectivity:
-- Ensure MySQL is running and accessible
-- Verify database credentials in application.properties
-- Check that the mrchef database exists
+## Escaneo de Vulnerabilidades con Docker
 
-For Docker-related issues:
-- Ensure Docker and Docker Compose are properly installed
-- Check if ports 8080 and 8081 are available
-- Use `docker logs` to investigate container startup problems
+Proporcionamos configuraciones Docker específicamente para propósitos de escaneo de vulnerabilidades. Esto le permite analizar dependencias sin afectar su despliegue regular.
+
+### Ejecutar el Escaneo de Vulnerabilidades
+
+#### Construir y ejecutar los contenedores para escaneo:
+```bash
+docker-compose build
+docker-compose up -d
+```
+
+#### Extraer los informes de vulnerabilidades:
+```bash
+docker cp mrchef-backend:/reports/backend-vulnerability-report.html ./backend-vulnerabilities.html
+docker cp mrchef-frontend:/reports/frontend-vulnerability-report.html ./frontend-vulnerabilities.html
+```
+
+#### Ver los informes:
+
+- Abra los archivos HTML en cualquier navegador web
+- Los informes proporcionan información detallada sobre vulnerabilidades en dependencias
+
+#### Detener los contenedores después del escaneo:
+```bash
+docker-compose down
+```
+
+## Detalles de Configuración
+
+La configuración Docker utiliza OWASP Dependency-Check para escanear vulnerabilidades conocidas en las dependencias del proyecto. Esto proporciona:
+
+- Evaluación integral de vulnerabilidades
+- Identificación de CVE y calificaciones de severidad
+- Recomendaciones para remediar problemas de seguridad
+- Informes detallados en formatos HTML y JSON
+
+## Análisis de Calidad de Código con SonarQube
+
+SonarQube está integrado para analizar la calidad del código y las vulnerabilidades de seguridad en el código fuente.
+
+### Iniciar el contenedor SonarQube:
+```bash
+docker-compose up -d sonarqube sonarqube-db
+```
+
+### Ejecutar análisis SonarQube:
+```bash
+# Para el backend
+docker run --rm --network mrchef_mrchef-network -v "C:/Users/esnup/Desktop/seguri/m1/mrchef/MrChef-Backend:/usr/src/app" -w /usr/src/app maven:3.8-openjdk-17 mvn sonar:sonar "-Dsonar.projectKey=mrchef-backend" "-Dsonar.projectName=MrChef Backend" "-Dsonar.host.url=http://sonarqube:9000" "-Dsonar.login=your_sonar_token"
+
+# Para el frontend
+docker run --rm --network mrchef_mrchef-network -v "C:/Users/esnup/Desktop/seguri/m1/mrchef/MrChef-FrontEnd:/usr/src/app" -w /usr/src/app maven:3.8-openjdk-17 mvn sonar:sonar "-Dsonar.projectKey=mrchef-frontend" "-Dsonar.projectName=MrChef Frontend" "-Dsonar.host.url=http://sonarqube:9000" "-Dsonar.login=your_sonar_token"
+```
+
+### Acceder a los informes de SonarQube:
+
+- Navegue a http://localhost:9000
+- Vea informes detallados sobre calidad de código, vulnerabilidades de seguridad y problemas de mantenibilidad
+- Examine ubicaciones específicas de código que requieren atención
+
+## Consideraciones Importantes de Seguridad
+
+- La aplicación utiliza JWT para autenticación
+- Asegúrese siempre de que su instalación de MySQL esté correctamente protegida
+- Actualice las dependencias regularmente para abordar vulnerabilidades de seguridad
+- Revise los informes de vulnerabilidad y aborde los problemas críticos
+- Aborde todos los problemas críticos y de alta gravedad encontrados por SonarQube
+
+## Arquitectura
+
+Cliente → Frontend (8081) → Backend (8080) → Base de datos (3306)
+
+## Notas de Desarrollo
+
+- El backend utiliza Spring Security y JWT para autenticación
+- El frontend utiliza plantillas Thymeleaf y Bootstrap para la interfaz de usuario
+- Ambos componentes están protegidos con Spring Security
+- OWASP Dependency-Check está integrado para análisis de vulnerabilidades de seguridad
+- SonarQube se utiliza para análisis continuo de calidad de código y seguridad
+
+## Solución de Problemas
+
+### Si encuentra problemas con la conectividad de la base de datos:
+
+- Asegúrese de que MySQL está ejecutándose y es accesible
+- Verifique las credenciales de la base de datos en application.properties
+- Compruebe que la base de datos mrchef existe
+
+### Para problemas relacionados con Docker:
+
+- Asegúrese de que Docker y Docker Compose estén correctamente instalados
+- Compruebe si los puertos 8080, 8081 y 9000 están disponibles
+- Utilice docker logs para investigar problemas de inicio de contenedores
+
+### Para problemas de SonarQube:
+
+- Asegúrese de que el contenedor SonarQube esté ejecutándose (docker ps)
+- Verifique la conectividad de red entre contenedores
+- Compruebe que el token utilizado es válido y tiene los permisos apropiados
