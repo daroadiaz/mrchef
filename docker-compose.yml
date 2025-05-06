@@ -1,7 +1,7 @@
 version: '3.8'
 
 services:
-  # SonarQube
+  # SonarQube - Plataforma de análisis de calidad de código
   sonarqube:
     image: sonarqube:lts
     container_name: sonarqube
@@ -19,6 +19,12 @@ services:
       - "9000:9000"
     networks:
       - mrchef-network
+    restart: unless-stopped
+    mem_limit: 2g
+    ulimits:
+      nofile:
+        soft: 65536
+        hard: 65536
   
   # Base de datos PostgreSQL para SonarQube
   sonarqube-db:
@@ -32,8 +38,9 @@ services:
       - sonarqube_db:/var/lib/postgresql/data
     networks:
       - mrchef-network
+    restart: unless-stopped
   
-  # Backend
+  # Backend - Aplicación Spring Boot
   backend:
     build: 
       context: ./MrChef-Backend
@@ -42,17 +49,20 @@ services:
     ports:
       - "8080:8080"
     environment:
+      # Configuración de la base de datos
       - SPRING_DATASOURCE_URL=jdbc:mysql://host.docker.internal:3306/mrchef
       - SPRING_DATASOURCE_USERNAME=root
       - SPRING_DATASOURCE_PASSWORD=Freya-100MTH
       - MYSQL_HOST=host.docker.internal
+      # Clave secreta para JWT
       - JWT_SECRET_KEY=TuClaveSecretaMuySeguraAquiEnVariableDeEntorno
     extra_hosts:
       - "host.docker.internal:host-gateway"
     networks:
       - mrchef-network
-
-  # Frontend
+    restart: unless-stopped
+  
+  # Frontend - Aplicación Spring Boot con Thymeleaf
   frontend:
     build: 
       context: ./MrChef-FrontEnd
@@ -62,17 +72,30 @@ services:
       - "8081:8081"
     environment:
       - BACKEND_URL=http://backend:8080
+      # Añadir configuración específica para Thymeleaf
+      - SPRING_THYMELEAF_CACHE=false
+      - SPRING_THYMELEAF_PREFIX=classpath:/templates/
+      - SPRING_THYMELEAF_SUFFIX=.html
+      - SPRING_THYMELEAF_MODE=HTML
+      - SPRING_THYMELEAF_ENCODING=UTF-8
+      - SPRING_THYMELEAF_SERVLET_CONTENT_TYPE=text/html
     depends_on:
       - backend
     extra_hosts:
       - "host.docker.internal:host-gateway"
     networks:
       - mrchef-network
+    restart: unless-stopped
+    volumes:
+      # Mapear la carpeta de templates para facilitar la depuración
+      - ./MrChef-FrontEnd/src/main/resources/templates:/app/resources/templates
 
+# Definición de redes
 networks:
   mrchef-network:
     driver: bridge
 
+# Definición de volúmenes persistentes
 volumes:
   sonarqube_data:
   sonarqube_extensions:

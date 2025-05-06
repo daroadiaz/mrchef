@@ -16,7 +16,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 public class HomeController {
 
     private TokenStore tokenStore;
-    
+
     @Value("${backend.url:http://localhost:8080}")
     private String backendUrl;
 
@@ -30,7 +30,7 @@ public class HomeController {
             @RequestParam(name = "name", required = false, defaultValue = "Seguridad y Calidad en el Desarrollo") String name,
             Model model) {
         model.addAttribute("name", name);
-        return "Home";
+        return "home"; // Cambiado de "Home" a "home"
     }
 
     @GetMapping("/")
@@ -38,7 +38,7 @@ public class HomeController {
             @RequestParam(name = "name", required = false, defaultValue = "Seguridad y Calidad en el Desarrollo") String name,
             Model model) {
         model.addAttribute("name", name);
-        return "Home";
+        return "home"; // Cambiado de "Home" a "home"
     }
 
     @GetMapping("/recetas/detalles")
